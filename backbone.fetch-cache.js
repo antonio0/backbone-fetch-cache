@@ -89,8 +89,12 @@
       expires = (new Date()).getTime() + ((opts.expires || 5 * 60) * 1000);
     }
 
+    var now = (new Date()).getTime();
+
     Backbone.fetchCache._cache[key] = {
       expires: expires,
+      cachedOn: now,
+      lastAccessedOn: now,
       value: attrs
     };
 
@@ -160,6 +164,11 @@
           if (_.isFunction(opts.success)) { opts.success(self); }
           deferred.resolve(self);
         }
+        
+        // Update last accessed time 
+        data.lastAccessedOn = (new Date()).getTime();
+        Backbone.fetchCache.setLocalStorage();
+
       });
 
       if (!opts.prefill) {
@@ -239,6 +248,10 @@
           if (_.isFunction(opts.success)) { opts.success(self); }
           deferred.resolve(self);
         }
+
+        // Update last accessed time 
+        data.lastAccessedOn = (new Date()).getTime();
+        Backbone.fetchCache.setLocalStorage();
       });
 
       if (!opts.prefill) {
